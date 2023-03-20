@@ -4,10 +4,11 @@
 
 import {screen, waitFor} from "@testing-library/dom"
 import BillsUI from "../views/BillsUI.js"
+import userEvent from '@testing-library/user-event'
 import { bills } from "../fixtures/bills.js"
 import { ROUTES_PATH} from "../constants/routes.js";
 import {localStorageMock} from "../__mocks__/localStorage.js";
-
+import {handleClickNewBill} from "../containers/Bills"
 import router from "../app/Router.js";
 
 describe("Given I am connected as an employee", () => {
@@ -31,9 +32,29 @@ describe("Given I am connected as an employee", () => {
     test("Then bills should be ordered from earliest to latest", () => {
       document.body.innerHTML = BillsUI({ data: bills })
       const dates = screen.getAllByText(/^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i).map(a => a.innerHTML)
-      const antiChrono = (a, b) => ((a < b) ? 1 : -1)
+      const antiChrono = (a, b) => {return new Date((b.date)) - new Date((a.date))} //correction sort date
       const datesSorted = [...dates].sort(antiChrono)
       expect(dates).toEqual(datesSorted)
     })
+
+    describe('When I am on Bills Page and I click on newbill btn', () => {
+      test('Then, new bill form should appear',  () => {
+    
+        Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+        window.localStorage.setItem('user', JSON.stringify({
+          type: 'Employee'
+        }))
+        window.onNavigate(ROUTES_PATH.Bills)
+        const openNewBill = jest.fn(() => handleClickNewBill())
+        const newBillBTN = screen.getByTestId('btn-new-bill')
+        newBillBTN.addEventListener('click', openNewBill)
+        userEvent.click(newBillBTN)
+        expect(openNewBill).toHaveBeenCalled()
+        expect(screen.getByTestId(`form-new-bill`)).toBeTruthy()
+        
+      })
+    })
+  
+  
   })
 })

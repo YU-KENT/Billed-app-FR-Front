@@ -18,6 +18,18 @@ export default class NewBill {
   handleChangeFile = e => {
     e.preventDefault()
     const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
+    const fileInput = this.document.querySelector(`input[data-testid="file"]`)
+    var testmsg = file.name.substring(file.name.lastIndexOf('.') + 1)
+    const extension1 = testmsg === 'jpg'
+    const extension2 = testmsg === 'png'
+    const extension3 = testmsg === 'jpeg'
+    
+    if(!extension1 && !extension2 && !extension3 ){
+      fileInput.value=""
+      alert("Vous pouvez choisir un document de jpg, jpeg ou png")
+
+    }else{
+   
     const filePath = e.target.value.split(/\\/g)
     const fileName = filePath[filePath.length-1]
     const formData = new FormData()
@@ -40,6 +52,7 @@ export default class NewBill {
         this.fileName = fileName
       }).catch(error => console.error(error))
   }
+}
   handleSubmit = e => {
     e.preventDefault()
     console.log('e.target.querySelector(`input[data-testid="datepicker"]`).value', e.target.querySelector(`input[data-testid="datepicker"]`).value)
