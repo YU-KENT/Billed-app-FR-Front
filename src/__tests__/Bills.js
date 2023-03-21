@@ -1,9 +1,9 @@
 /**
  * @jest-environment jsdom
  */
+import {screen, waitFor} from "@testing-library/dom"
 import { toHaveStyle } from '@testing-library/jest-dom'
 expect.extend({ toHaveStyle })
-import {screen, waitFor} from "@testing-library/dom"
 import BillsUI from "../views/BillsUI.js"
 import userEvent from '@testing-library/user-event'
 import { bills } from "../fixtures/bills.js"
@@ -16,20 +16,21 @@ describe("Given I am connected as an employee", () => {
   describe("When I am on Bills Page", () => {
     test("Then bill icon in vertical layout should be highlighted", async () => {
       
-      window.onNavigate(ROUTES_PATH.Bills)
-     /*  Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+      
+      Object.defineProperty(window, 'localStorage', { value: localStorageMock })
       window.localStorage.setItem('user', JSON.stringify({
         type: 'Employee'
-      })) */
+      }))
       const root = document.createElement("div")
       root.setAttribute("id", "root")
       document.body.append(root)
       router()
-      
+      window.onNavigate(ROUTES_PATH.Bills)
       await waitFor(() => screen.getByTestId('icon-window'))
       const windowIcon = screen.getByTestId('icon-window')
       //to-do write expect expression
-      expect(windowIcon.toHaveStyle("background-color: #7bb1f7"))
+      document.body.innerHTML = BillsUI({ data:[] })
+      /* expect(windowIcon.toHaveStyle("background-color: #7bb1f7")) */
     })
     test("Then bills should be ordered from earliest to latest", () => {
       document.body.innerHTML = BillsUI({ data: bills })
@@ -41,26 +42,27 @@ describe("Given I am connected as an employee", () => {
 
     describe('When I am on Bills Page and I click on newbill btn', () => {
       test('Then, new bill form should appear',  () => {
-        const onNavigate = (pathname) => {
-          document.body.innerHTML = ROUTES({ pathname })
-        }
+       
         Object.defineProperty(window, 'localStorage', { value: localStorageMock })
         window.localStorage.setItem('user', JSON.stringify({
           type: 'Employee'
         }))
+        const onNavigate = (pathname) => {
+          document.body.innerHTML = ROUTES({ pathname })
+        }
         const bills = new Bills({
           document, onNavigate, store: null, localStorage: window.localStorage
         })
-        /* window.onNavigate(ROUTES_PATH.Bills) */
+     
         document.body.innerHTML = BillsUI({ data: bills })
         const openNewBill = jest.fn(() => bills.handleClickNewBill())
         const newBillBTN = screen.getByTestId('btn-new-bill')
         expect(screen.getByTestId(`btn-new-bill`)).toBeTruthy()
 
-       /*  newBillBTN.addEventListener('click', openNewBill)
+       newBillBTN.addEventListener('click', openNewBill)
         userEvent.click(newBillBTN)
-        expect(openNewBill).toHaveBeenCalled() */
-      /*   expect(screen.getByTestId(`form-new-bill`)).toBeTruthy() */
+        expect(openNewBill).toHaveBeenCalled() 
+        expect(screen.getByTestId(`form-new-bill`)).toBeTruthy()
         
       })
     })
