@@ -1,14 +1,19 @@
 import VerticalLayout from './VerticalLayout.js'
 import ErrorPage from "./ErrorPage.js"
 import LoadingPage from "./LoadingPage.js"
-
-import Actions from './Actions.js'
-
+import eyeBlueIcon from "../assets/svg/eye_blue.js"
 
 
 
 export default ({ data: bills, loading, error }) => {
-  
+
+  const Actions = (billUrl) => (
+    `<div class="icon-actions">
+      <div id="eye" data-testid="icon-eye" data-bill-url=${billUrl}>
+      ${eyeBlueIcon}
+      </div>
+    </div>`
+  )
   const modal = () => (`
     <div class="modal fade" id="modaleFile" data-testid="modaleFile" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-lg" role="document">

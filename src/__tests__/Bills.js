@@ -31,9 +31,9 @@ describe("Given I am connected as an employee", () => {
       const windowIcon = screen.getByTestId('icon-window')
       expect(screen.getByTestId('icon-window')).toBeTruthy()//success 
       //to-do write expect expression
-      /* document.body.innerHTML = BillsUI({ data:[] }) */
-      expect(windowIcon.toHaveClass("active-icon"))
+      expect(windowIcon).toHaveClass("active-icon")  
     })
+    
     test("Then bills should be ordered from earliest to latest", () => {
       document.body.innerHTML = BillsUI({ data: bills })
       const dates = screen.getAllByText(/^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i).map(a => a.innerHTML)
@@ -77,38 +77,30 @@ describe("Given I am connected as an employee", () => {
     })
   }) 
   describe('When I am on Bills Page, i click the "iconeye"', () => {
-    test(('Then, it should show a modal'), async() => {   //wrong
+    test(('Then, it should show a modal'), () => {  
       Object.defineProperty(window, 'localStorage', { value: localStorageMock })
         window.localStorage.setItem('user', JSON.stringify({
           type: 'Employee'
         }))
         const onNavigate = (pathname) => {
-          document.body.innerHTML = ROUTES({ pathname })
+        document.body.innerHTML = ROUTES({ pathname })
         }
         const billS = new Bills({
-          document, onNavigate, store: null, localStorage: window.localStorage
+        document, onNavigate, store: null, localStorage: window.localStorage
         })
-       /*   const root = document.createElement("div")
-      root.setAttribute("id", "root")
-      document.body.append(root)
-      router()
-      window.onNavigate(ROUTES_PATH.Bills) 
-       */
-      document.body.innerHTML = Actions(bills[0].fileUrl)
-      await waitFor(() => screen.getByTestId('icon-eye') )
-      const handleClickIconEye = jest.fn(() => billS.handleClickIconEye())
-      const iconeye = screen.getByTestId('icon-eye')
-      expect(screen.getByTestId(`icon-eye`)).toBeTruthy()  //success 
-      
-      iconeye.addEventListener('click', handleClickIconEye(iconeye))
-      userEvent.click(iconeye)
-      expect(handleClickIconEye).toHaveBeenCalled() // not working
- 
-   /*    expect(handleClickIconEye).toHaveBeenCalled() */
-
-      /*  const modale = screen.getByTestId('modaleFile')
-      expect(modale).toBeTruthy()   */
-      
+     
+      document.body.innerHTML = BillsUI({ data: bills })
+      const iconeyes = screen.getAllByTestId('icon-eye')
+      const eye = iconeyes[0]
+      const handleClickIconEye = jest.fn((eye) => billS.handleClickIconEye(eye))
+      expect(screen.getAllByTestId(`icon-eye`)).toBeTruthy()  //success 
+      eye.addEventListener('click', handleClickIconEye(eye))
+      userEvent.click(eye)
+      expect(handleClickIconEye).toHaveBeenCalled() //success 
+      const modale = screen.getByTestId('modaleFile')
+      console.log(modale)
+      expect(modale).toBeTruthy()
+     
     })
   }) 
 })
