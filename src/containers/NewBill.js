@@ -26,6 +26,7 @@ export default class NewBill {
     
     if(!extension1 && !extension2 && !extension3 ){
       fileInput.value=""
+      
       alert("Vous pouvez choisir un document de jpg, jpeg ou png")
 
     }else{
@@ -55,7 +56,6 @@ export default class NewBill {
 }
   handleSubmit = e => {
     e.preventDefault()
-    console.log('e.target.querySelector(`input[data-testid="datepicker"]`).value', e.target.querySelector(`input[data-testid="datepicker"]`).value)
     const email = JSON.parse(localStorage.getItem("user")).email
     const bill = {
       email,
@@ -70,6 +70,7 @@ export default class NewBill {
       fileName: this.fileName,
       status: 'pending'
     }
+
     this.updateBill(bill)
     this.onNavigate(ROUTES_PATH['Bills'])
   }
@@ -84,6 +85,9 @@ export default class NewBill {
         this.onNavigate(ROUTES_PATH['Bills'])
       })
       .catch(error => console.error(error))
+    }else {
+      return null
     }
   }
+
 }

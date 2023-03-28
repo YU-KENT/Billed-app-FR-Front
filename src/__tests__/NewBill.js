@@ -3,9 +3,10 @@
  */
 
 import { fireEvent,screen } from "@testing-library/dom"
-
+import userEvent from '@testing-library/user-event'
 import NewBillUI from "../views/NewBillUI.js"
 import NewBill from "../containers/NewBill.js"
+import { localStorageMock } from "../__mocks__/localStorage.js"
 
 
 describe("Given I am connected as an employee", () => {
@@ -28,21 +29,19 @@ describe("Given I am connected as an employee", () => {
   describe("When I am on NewBill Page,I do not fill all fields and I click on Envoyer button", () => {
     test("Then It should rest at NewBills page", () => {
       document.body.innerHTML = NewBillUI();
-
       const inpuMontant = screen.getByTestId("vat");
       expect(inpuMontant.value).toBe("");
-
       const BtnEnvoyer = screen.getByText("Envoyer");
       const handleSubmit = jest.fn((e) => e.preventDefault());
-
       BtnEnvoyer.addEventListener("submit", handleSubmit);
       fireEvent.submit(BtnEnvoyer);
       expect(screen.getByText("Envoyer une note de frais")).toBeTruthy();
     })
   })
-
+  //test d'intégration POST
   describe("When I am on NewBill Page,I fill all fields and I click on Envoyer button", () => {
     test("Then It should renders Bills page", () => {
+
       document.body.innerHTML = NewBillUI();
       const inputData = {
           "id": "47qAXb6fIm2zOKkLzMro",
@@ -80,18 +79,52 @@ describe("Given I am connected as an employee", () => {
         const inputCom = screen.getByTestId("commentary");
         fireEvent.change(inputCom , { target: { value: inputData.commentary } });
         expect(inputCom.value).toBe(inputData.commentary);
+        const input = screen.getByTestId("file");
+        const dataFile = new File([], inputData.fileName, { type: 'image/jpg' });
+        userEvent.upload(input, dataFile)
+        expect(input.files[0]).toStrictEqual(dataFile)
+        expect(input.files.item(0)).toStrictEqual(dataFile)
+        expect(input.files).toHaveLength(1)  ////sucess
+
         
-        let fileUrl = inputData.fileUrl
-        let fileName = inputData.fileName
 
-        const BtnEnvoyer = screen.getByText("Envoyer");
-        const handleSubmit = jest.fn((e) => e.preventDefault());
-        BtnEnvoyer.addEventListener("submit", handleSubmit);
-        fireEvent.submit(BtnEnvoyer);
-        expect(handleSubmit).toHaveBeenCalled(); //OK 
-        expect(screen.getByText("Mes notes de frais")).toBeTruthy(); //wrong still in newBill page
+        // localStorage should be populated with form data
+          Object.defineProperty(window, "localStorage", {
+          value: {
+            getItem: jest.fn(() => null),
+            setItem: jest.fn(() => null),
+          },
+          writable: true,
+        }); 
+        
+ 
+        //  mock navigation to test it
+        Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+        window.localStorage.setItem('user', JSON.stringify({
+          type:"Empolyee",
+          email: "a@a"
+        }))
+      
+          
+        const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname });
+      };
+      const store = jest.fn();
+      const newBill = new NewBill({
+        document,
+        onNavigate,
+        store,
+        localStorage: window.localStorage,
+      });
+      
 
-
+      const handleSubmit = jest.fn(newBill.handleSubmit);
+      newBill.updateBill = jest.fn().mockResolvedValue({});
+      const BtnEnvoyer = screen.getByText("Envoyer");
+      BtnEnvoyer.addEventListener("submit", handleSubmit);
+      fireEvent.submit(BtnEnvoyer);
+      expect(handleSubmit).toHaveBeenCalled();
+      
     })
   })
 

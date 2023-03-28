@@ -25,9 +25,9 @@ export default class Login {
     }
     this.localStorage.setItem("user", JSON.stringify(user))
     this.login(user)
-      .catch(
-        (err) => /* this.createUser(user) */console.log("error")
-      )
+    .catch(error => {
+      throw error;
+    })
       .then(() => {
         this.onNavigate(ROUTES_PATH['Bills'])
         this.PREVIOUS_LOCATION = ROUTES_PATH['Bills']
@@ -47,9 +47,9 @@ export default class Login {
     }
     this.localStorage.setItem("user", JSON.stringify(user))
     this.login(user)
-      .catch(
-        (err) => /* this.createUser(user) */console.log("error")
-      )
+    .catch(error => {
+      throw error;
+    })
       .then(() => {
         this.onNavigate(ROUTES_PATH['Dashboard'])
         this.PREVIOUS_LOCATION = ROUTES_PATH['Dashboard']
