@@ -3,11 +3,13 @@
  */
 
 import { fireEvent, screen } from "@testing-library/dom"
+import '@testing-library/jest-dom'
 import userEvent from '@testing-library/user-event'
 import NewBillUI from "../views/NewBillUI.js"
+import NewBill from "../containers/NewBill.js"
 import { localStorageMock } from "../__mocks__/localStorage.js"
 import Logout from "../containers/Logout.js"
-import { ROUTES, ROUTES_PATH } from "../constants/routes"
+import { ROUTES} from "../constants/routes"
 
 describe("Given I am connected as an employee", () => {
   describe("When I am on NewBill Page", () => {
@@ -24,7 +26,6 @@ describe("Given I am connected as an employee", () => {
       expect(screen.getByTestId("commentary")).toBeTruthy()
       expect(screen.getByTestId("file")).toBeTruthy()
     })
-
 
   })
 
@@ -52,6 +53,35 @@ describe("Given I am connected as an employee", () => {
       expect(screen.getByText("Envoyer une note de frais")).toBeTruthy();
     })
   })
+
+  describe("When I am on NewBill Page,I update file is not 'jpg''pgn''jpeg' ", () => {
+  test("a error message should appear", () => {
+    document.body.innerHTML = NewBillUI();
+    const onNavigate = (pathname) => {
+      document.body.innerHTML = ROUTES({ pathname });
+    };
+    const store = jest.fn();
+    const newBill = new NewBill({
+      document,
+      onNavigate,
+      store,
+      localStorage: window.localStorage,
+    });
+    const fakeFile = {
+      "fileName": "fakeFile.pdf",
+    }
+    const inputFile = screen.getByTestId("file");
+    const handleChangeFile = jest.fn(newBill.handleChangeFile);
+    const dataFile = new File([],fakeFile.fileName,{ type:'pdf' });
+    inputFile.addEventListener("change", handleChangeFile)
+    userEvent.upload(inputFile, dataFile)
+    expect(inputFile.files).toHaveLength(1)
+    expect(handleChangeFile).toHaveBeenCalled()
+    const divFile = inputFile.parentElement
+    expect(divFile).toBeTruthy()
+    expect(divFile).toHaveAttribute("data-error-visible","true")
+  })
+})
   //test d'intégration POST
   describe("When I am on NewBill Page,I fill all fields and I click on Envoyer button", () => {
     test("Then It should renders Bills page", () => {
@@ -97,7 +127,6 @@ describe("Given I am connected as an employee", () => {
       const dataFile = new File([], inputData.fileName, { type: 'image/jpg' });
       userEvent.upload(inputFile, dataFile)
       expect(inputFile.files[0]).toStrictEqual(dataFile)
-      expect(inputFile.files.item(0)).toStrictEqual(dataFile)
       expect(inputFile.files).toHaveLength(1)  ////sucess
 
       // localStorage should be populated with form data
@@ -108,68 +137,35 @@ describe("Given I am connected as an employee", () => {
         },
         writable: true,
       });
-     
+
 
       Object.defineProperty(window, 'localStorage', { value: localStorageMock })
-     /*  window.localStorage.setItem('user', JSON.stringify({
+      window.localStorage.setItem('user', JSON.stringify({
         type: "Empolyee",
         email: "a@a"
-      })) */
+      }))
 
-      
-      jest.spyOn(window.localStorage, 'setItem');
-     
-      const handleSubmit = jest.fn((e)=>{
-        e.preventDefault()
-        const bill = {
-          email: "a@a",
-          type: e.target.querySelector(`select[data-testid="expense-type"]`).value,
-          name:  e.target.querySelector(`input[data-testid="expense-name"]`).value,
-          amount: parseInt(e.target.querySelector(`input[data-testid="amount"]`).value),
-          date:  e.target.querySelector(`input[data-testid="datepicker"]`).value,
-          vat: e.target.querySelector(`input[data-testid="vat"]`).value,
-          pct: parseInt(e.target.querySelector(`input[data-testid="pct"]`).value) || 20,
-          commentary: e.target.querySelector(`textarea[data-testid="commentary"]`).value,
-          fileName: e.target.querySelector(`input[data-testid="file"]`).files[0].name,
-          status: 'pending'
-        }
-        window.localStorage.setItem("user", JSON.stringify({
-          type: "Empolyee",
-          bill: bill,
-        }))
-        const onNavigate = (pathname) => {
-          document.body.innerHTML = ROUTES({ pathname });
-        }; 
-        onNavigate(ROUTES_PATH['Bills'])
-      
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname });
+      };
+      const store = jest.fn();
+      const newBill = new NewBill({
+        document,
+        onNavigate,
+        store,
+        localStorage: window.localStorage,
       });
 
+      const handleSubmit = jest.fn(newBill.handleSubmit);
+      newBill.updateBill = jest.fn().mockResolvedValue({});
       const BtnEnvoyer = screen.getByTestId("form-new-bill");
       BtnEnvoyer.addEventListener("submit", handleSubmit);
       fireEvent.submit(BtnEnvoyer);
       expect(handleSubmit).toHaveBeenCalled();
       expect(screen.getByText("Mes notes de frais")).toBeTruthy();
-      expect(window.localStorage.setItem).toHaveBeenCalled();
-/*       expect(window.localStorage.setItem).toHaveBeenCalledWith(
-        "user",
-        JSON.stringify({
-          type: "Employee",
-          bill: {
-          email: inputData.email,
-          type: inputData.type,
-          name:  inputData.name,
-          amount: parseInt(inputData.amount) ,
-          date:  inputData.date,
-          vat: inputData.vat,
-          pct: parseInt(inputData.pct),
-          commentary: inputData.commentary,
-          fileName: inputData.fileName,
-          status: 'pending'
-          }
 
-        })
-      ); */
     })
+
   })
 
 })
@@ -195,3 +191,4 @@ describe('Given I am connected Employee', () => {
     })
   })
 })
+

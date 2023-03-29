@@ -62,3 +62,18 @@ textarea:focus, input:focus, select:focus {
   color: #0E5AE5 !important;
 }
 
+#divFile[data-error]::after {
+  content: attr(data-error);
+  font-size: 18px;
+  color: #e54858;
+  display: block;
+  margin-top: 7px;
+  text-align: left;
+  line-height: 1.0;
+  opacity: 0;
+  transition: 0.3s;
+  font-weight: 500;
+}
+#divFile[data-error-visible="true"]::after {
+  opacity: 1;
+}

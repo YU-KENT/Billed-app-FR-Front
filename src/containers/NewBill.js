@@ -9,6 +9,7 @@ export default class NewBill {
     const formNewBill = this.document.querySelector(`form[data-testid="form-new-bill"]`)
     formNewBill.addEventListener("submit", this.handleSubmit)
     const file = this.document.querySelector(`input[data-testid="file"]`)
+    const divFile = file.parentNode
     file.addEventListener("change", this.handleChangeFile)
     this.fileUrl = null
     this.fileName = null
@@ -17,6 +18,7 @@ export default class NewBill {
   }
   handleChangeFile = e => {
     e.preventDefault()
+    
     const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
     const fileInput = this.document.querySelector(`input[data-testid="file"]`)
     var testmsg = file.name.substring(file.name.lastIndexOf('.') + 1)
@@ -26,11 +28,12 @@ export default class NewBill {
     
     if(!extension1 && !extension2 && !extension3 ){
       fileInput.value=""
-      
-      alert("Vous pouvez choisir un document de jpg, jpeg ou png")
+      divFile.setAttribute("data-error", "Vous pouvez choisir un fichiers JPG, PNG ou JPEG");
+      divFile.setAttribute("data-error-visible", true);
 
     }else{
-   
+      divFile.removeAttribute("data-error");
+      divFile.removeAttribute("data-error-visible");
     const filePath = e.target.value.split(/\\/g)
     const fileName = filePath[filePath.length-1]
     const formData = new FormData()
