@@ -2,14 +2,16 @@
  * @jest-environment jsdom
  */
 
-import { fireEvent, screen } from "@testing-library/dom"
+import { fireEvent, screen, waitFor } from "@testing-library/dom"
 import '@testing-library/jest-dom'
 import userEvent from '@testing-library/user-event'
 import NewBillUI from "../views/NewBillUI.js"
 import NewBill from "../containers/NewBill.js"
 import { localStorageMock } from "../__mocks__/localStorage.js"
 import Logout from "../containers/Logout.js"
-import { ROUTES} from "../constants/routes"
+import { ROUTES, ROUTES_PATH } from "../constants/routes"
+import router from "../app/Router.js";
+import store from"../app/Store.js"
 
 describe("Given I am connected as an employee", () => {
   describe("When I am on NewBill Page", () => {
@@ -25,6 +27,22 @@ describe("Given I am connected as an employee", () => {
       expect(screen.getByTestId("pct")).toBeTruthy()
       expect(screen.getByTestId("commentary")).toBeTruthy()
       expect(screen.getByTestId("file")).toBeTruthy()
+    })
+    test("Then mail icon in vertical layout should be highlighted", async () => {  
+      
+      Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+      window.localStorage.setItem('user', JSON.stringify({
+        type: 'Employee'
+      }))
+      const root = document.createElement("div")
+      root.setAttribute("id", "root")
+      document.body.append(root)
+      router()
+      window.onNavigate(ROUTES_PATH.NewBill)
+      await waitFor(() => screen.getByTestId('icon-mail'))
+      const MailIcon = screen.getByTestId('icon-mail')
+      expect(screen.getByTestId('icon-mail')).toBeTruthy()//success 
+      expect(MailIcon).toHaveClass("active-icon")  
     })
 
   })
@@ -54,34 +72,71 @@ describe("Given I am connected as an employee", () => {
     })
   })
 
-  describe("When I am on NewBill Page,I update file is not 'jpg''pgn''jpeg' ", () => {
-  test("a error message should appear", () => {
+  describe("When I am on NewBill Page", () => {
+    ;
     document.body.innerHTML = NewBillUI();
     const onNavigate = (pathname) => {
       document.body.innerHTML = ROUTES({ pathname });
     };
-    const store = jest.fn();
+    
+    const store = null;
     const newBill = new NewBill({
       document,
       onNavigate,
       store,
       localStorage: window.localStorage,
     });
-    const fakeFile = {
-      "fileName": "fakeFile.pdf",
-    }
+   /*  beforeEach(() => newBill.store = jest.fn().mockResolvedValue({})) */
+
+    test("I update file is not 'jpg''pgn''jpeg',a error message should appear",() => {
+    const fakeFile1 = {
+        "fileName": "fakeFile.pdf",
+      }
     const inputFile = screen.getByTestId("file");
+    const divFile = inputFile.parentElement
     const handleChangeFile = jest.fn(newBill.handleChangeFile);
-    const dataFile = new File([],fakeFile.fileName,{ type:'pdf' });
     inputFile.addEventListener("change", handleChangeFile)
-    userEvent.upload(inputFile, dataFile)
+    const dataFile1 = new File([],fakeFile1.fileName,{ type:'pdf' });
+    userEvent.upload(inputFile, dataFile1)
     expect(inputFile.files).toHaveLength(1)
     expect(handleChangeFile).toHaveBeenCalled()
-    const divFile = inputFile.parentElement
     expect(divFile).toBeTruthy()
-    expect(divFile).toHaveAttribute("data-error-visible","true")
+    expect(divFile).toHaveAttribute("data-error-visible","true") 
   })
-})
+    
+test("I update a 'jpg'file, it dont show error message",()=>{
+  /*     document.body.innerHTML = NewBillUI();
+    const onNavigate = (pathname) => {
+      document.body.innerHTML = ROUTES({ pathname });
+    };
+    const store = jest.fn().mockResolvedValue({});
+    const newBill = new NewBill({
+      document,
+      onNavigate,
+      store,
+      localStorage: window.localStorage,
+    }); */
+    
+    const handleChangeFile = jest.fn(newBill.handleChangeFile); 
+    
+      const fakeFile2 = {
+        "fileName": "fakeFile.jpg",
+      }
+      const dataFile2 = new File([],fakeFile2.fileName,{ type:'jpg' });
+      const inputFile = screen.getByTestId("file");
+      
+      const divFile = inputFile.parentElement
+      inputFile.value = ""
+      inputFile.addEventListener("change", handleChangeFile)
+      userEvent.upload(inputFile, dataFile2)
+    
+      expect(inputFile.files).toHaveLength(1)
+      expect(handleChangeFile).toHaveBeenCalled()
+      expect(divFile).toBeTruthy()
+      expect(divFile).toHaveAttribute("data-error-visible","false")
+    })
+  })
+
   //test d'intégration POST
   describe("When I am on NewBill Page,I fill all fields and I click on Envoyer button", () => {
     test("Then It should renders Bills page", () => {
@@ -138,7 +193,6 @@ describe("Given I am connected as an employee", () => {
         writable: true,
       });
 
-
       Object.defineProperty(window, 'localStorage', { value: localStorageMock })
       window.localStorage.setItem('user', JSON.stringify({
         type: "Empolyee",
@@ -155,7 +209,6 @@ describe("Given I am connected as an employee", () => {
         store,
         localStorage: window.localStorage,
       });
-
       const handleSubmit = jest.fn(newBill.handleSubmit);
       newBill.updateBill = jest.fn().mockResolvedValue({});
       const BtnEnvoyer = screen.getByTestId("form-new-bill");
@@ -163,7 +216,6 @@ describe("Given I am connected as an employee", () => {
       fireEvent.submit(BtnEnvoyer);
       expect(handleSubmit).toHaveBeenCalled();
       expect(screen.getByText("Mes notes de frais")).toBeTruthy();
-
     })
 
   })

@@ -17,7 +17,7 @@ jest.mock("../app/store", () => mockStore)
 
 describe("Given I am connected as an employee", () => {
   describe("When I am on Bills Page", () => {
-    test("Then bill icon in vertical layout should be highlighted", async () => {  ///wrong
+    test("Then bill icon in vertical layout should be highlighted", async () => { 
       
       Object.defineProperty(window, 'localStorage', { value: localStorageMock })
       window.localStorage.setItem('user', JSON.stringify({
@@ -157,7 +157,7 @@ describe("When an error occurs on API", () => {
     router()
   })
   test("fetches bills from an API and fails with 404 message error", async () => {
-    
+
     mockStore.bills.mockImplementationOnce(() => {
       return {
         list : () =>  {
