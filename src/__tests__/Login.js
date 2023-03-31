@@ -6,6 +6,13 @@ import LoginUI from "../views/LoginUI";
 import Login from "../containers/Login.js";
 import { ROUTES } from "../constants/routes";
 import { fireEvent, screen } from "@testing-library/dom";
+describe("Given that I am a user on login page", () => {
+    test("it show two login form 'Employé'and 'Administration'", () => {
+      document.body.innerHTML = LoginUI();
+      expect(screen.getByTestId("form-employee")).toBeTruthy();
+      expect(screen.getByTestId("form-admin")).toBeTruthy();
+});
+});
 
 describe("Given that I am a user on login page", () => {
   describe("When I do not fill fields and I click on employee button Login In", () => {
