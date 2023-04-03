@@ -16,7 +16,7 @@ export default () => {
           <div class="col-sm-6">
             <div class="card">
               <div class="card-body">
-                <form class="form-signin" data-testid="form-employee">
+                <form class="form-signin" id ="form-employee" data-testid="form-employee">
                   <h2 class="h3 mb-3 font-weight-normal">Employé</h1>
                   <label for="inputEmail">Votre email</label>
                   <input type="email" data-testid="employee-email-input" class="form-control" placeholder="johndoe@email.com" required autofocus>
@@ -30,7 +30,7 @@ export default () => {
           <div class="col-sm-6">
             <div class="card">
               <div class="card-body">
-                <form class="form-signin" data-testid="form-admin">
+                <form class="form-signin" id="form-admin" data-testid="form-admin">
                   <h2 class="h3 mb-3 font-weight-normal">Administration</h1>
                   <label for="inputEmail">Votre email</label>
                   <input type="email" data-testid="admin-email-input" class="form-control" placeholder="johndoe@email.com" required autofocus>

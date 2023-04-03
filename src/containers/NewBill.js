@@ -33,15 +33,14 @@ export default class NewBill {
 
     } else {
       divFile.setAttribute("data-error-visible", false);
-
       const filePath = e.target.value.split(/\\/g)
       const fileName = filePath[filePath.length - 1]
       const formData = new FormData()
       const email = JSON.parse(localStorage.getItem("user")).email
       formData.append('file', file)
       formData.append('email', email)
-
-     /*  this.store
+      
+      this.store
         .bills()
         .create({
           data: formData,
@@ -54,7 +53,7 @@ export default class NewBill {
           this.billId = key
           this.fileUrl = fileUrl
           this.fileName = fileName
-        }).catch(error => console.error(error)) */
+        }).catch(error => console.error(error))
     }
   }
   handleSubmit = e => {

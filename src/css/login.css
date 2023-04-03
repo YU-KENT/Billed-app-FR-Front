@@ -69,3 +69,21 @@ input {
 button {
   background-color: #0E5AE5;
 }
+
+#form-employee[data-error]::after,#form-admin[data-error]::after {
+  content: attr(data-error);
+  font-size: 13px;
+  color: #e54858;
+  display: block;
+  margin-top: 7px;
+  text-align: right;
+  line-height: 1.0;
+  opacity: 0;
+  transition: 0.3s;
+  font-weight: 500;
+  position: absolute;
+  bottom: 65px;
+}
+#form-employee[data-error-visible="true"]::after,#form-admin[data-error-visible="true"]::after {
+  opacity: 1;
+}

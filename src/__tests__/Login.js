@@ -1,17 +1,17 @@
 /**
  * @jest-environment jsdom
  */
-
+import '@testing-library/jest-dom'
 import LoginUI from "../views/LoginUI";
 import Login from "../containers/Login.js";
 import { ROUTES } from "../constants/routes";
 import { fireEvent, screen } from "@testing-library/dom";
 describe("Given that I am a user on login page", () => {
-    test("it show two login form 'Employé'and 'Administration'", () => {
-      document.body.innerHTML = LoginUI();
-      expect(screen.getByTestId("form-employee")).toBeTruthy();
-      expect(screen.getByTestId("form-admin")).toBeTruthy();
-});
+  test("it show two login form 'Employé'and 'Administration'", () => {
+    document.body.innerHTML = LoginUI();
+    expect(screen.getByTestId("form-employee")).toBeTruthy();
+    expect(screen.getByTestId("form-admin")).toBeTruthy();
+  });
 });
 
 describe("Given that I am a user on login page", () => {
@@ -47,7 +47,11 @@ describe("Given that I am a user on login page", () => {
       expect(inputPasswordUser.value).toBe("azerty");
 
       const form = screen.getByTestId("form-employee");
-      const handleSubmit = jest.fn((e) => e.preventDefault());
+      const handleSubmit = jest.fn((e) => {
+        e.preventDefault();
+        e.target.setAttribute("data-error", "Mot de passe incorrect.")
+        e.target.setAttribute("data-error-visible", true)
+      })
 
       form.addEventListener("submit", handleSubmit);
       fireEvent.submit(form);
@@ -90,9 +94,7 @@ describe("Given that I am a user on login page", () => {
       };
 
       let PREVIOUS_LOCATION = "";
-
       const store = jest.fn();
-
       const login = new Login({
         document,
         localStorage: window.localStorage,
@@ -123,7 +125,7 @@ describe("Given that I am a user on login page", () => {
     });
   });
 });
-
+///Admin
 describe("Given that I am a user on login page", () => {
   describe("When I do not fill fields and I click on admin button Login In", () => {
     test("Then It should renders Login page", () => {
@@ -157,11 +159,16 @@ describe("Given that I am a user on login page", () => {
       expect(inputPasswordUser.value).toBe("azerty");
 
       const form = screen.getByTestId("form-admin");
-      const handleSubmit = jest.fn((e) => e.preventDefault());
+      const handleSubmit = jest.fn((e) => {
+        e.preventDefault();
+        e.target.setAttribute("data-error", "Mot de passe incorrect.")
+        e.target.setAttribute("data-error-visible", true)
+      })
 
       form.addEventListener("submit", handleSubmit);
       fireEvent.submit(form);
       expect(screen.getByTestId("form-admin")).toBeTruthy();
+      expect(form).toHaveAttribute("data-error-visible", "true")
     });
   });
 
