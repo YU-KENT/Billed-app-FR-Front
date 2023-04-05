@@ -158,7 +158,7 @@ export default class {
 
     }
 
-    bills.forEach(bill => {  // added unbind to remove Propagation
+    bills.forEach(bill => {  // 4em bug ,added unbind to remove Propagation
       $(`#open-bill${bill.id}`).unbind("click").click((e) => this.handleEditTicket(e, bill, bills))
     })
 

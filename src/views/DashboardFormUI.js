@@ -4,12 +4,12 @@ import pctIcon from '../assets/svg/pct.js'
 import eyeWhite from '../assets/svg/eye_white.js'
 import { formatDate } from '../app/format.js'
 
-export const modal = () => (`
+export const modal = (fileName) => (`
   <div class="modal fade" id="modaleFileAdmin1" data-testid="modaleFileAdmin" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLongTitle">Justificatif</h5>
+          <h5 class="modal-title" id="exampleModalLongTitle">${fileName}</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -96,7 +96,7 @@ export default (bill) => {
       </div>
       `) : ''}
     </div>
-    ${modal()}
+    ${modal(bill.fileName)}
     </div>
   `)
 }

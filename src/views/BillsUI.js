@@ -7,9 +7,9 @@ import eyeBlueIcon from "../assets/svg/eye_blue.js"
 
 export default ({ data: bills, loading, error }) => {
 
-  const Actions = (billUrl) => (
+  const Actions = (billUrl,fileName) => (  //add fileName dans le date
     `<div class="icon-actions">
-      <div id="eye" data-testid="icon-eye" data-bill-url=${billUrl}>
+      <div id="eye" data-testid="icon-eye" data-bill-url=${billUrl} data-file-Name =${fileName} >
       ${eyeBlueIcon}
       </div>
     </div>`
@@ -49,7 +49,7 @@ export default ({ data: bills, loading, error }) => {
         <td>${bill.amount} €</td>
         <td>${bill.status}</td>
         <td>
-          ${Actions(bill.fileUrl)}
+          ${Actions(bill.fileUrl,bill.fileName)}
         </td>
       </tr>
       `)
