@@ -66,7 +66,7 @@ export default class Login {
   }
 
   // not need to cover this function by tests
-  /*  login = (user) => {
+   login = (user) => {
      if (this.store) {
        return this.store
        .login(JSON.stringify({
@@ -79,7 +79,7 @@ export default class Login {
      } else {
        return null
      }
-   } */
+   }
 
   // not need to cover this function by tests
   /*  createUser = (user) => {
